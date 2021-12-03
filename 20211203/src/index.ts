@@ -6,38 +6,37 @@ const loadFile = (filepath: string) => fs.readFileSync(filepath, { encoding: 'ut
 const exampleInput = loadFile('./example.txt')
 const exerciseInput = loadFile('./input.txt');
 
-
-function calculate(input: string[]): number {
-  let gamma = '';
-  let epsilon = '';
-
-  const intermediateValue: any = [];
+function findMatch(input: string[], compFn, pointer = 0, path = '') {
+  const modeMap: any = { '0': 0, '1': 0 };
 
   input.forEach((str) => {
-    str.split('').forEach((bit, idx) => {
-      if (!intermediateValue[idx]) {
-        intermediateValue[idx] = { '0': 0, '1': 0 };
-      }
-
-      intermediateValue[idx][bit] += 1;
-    });
+    const bit = str.charAt(pointer);
+    modeMap[bit] += 1;
   });
 
-  intermediateValue.forEach(val => {
-    if (val['0'] > val['1']) {
-      gamma += '0'
-      epsilon += '1'
-    } else {
-      epsilon += '0'
-      gamma += '1'
-    }
-  });
+  path += compFn(modeMap);
 
-  console.log({ intermediateValue });
-  console.log({gamma, epsilon});
+  const matches = input.filter(s => s.startsWith(path))
 
-  return parseInt(gamma, 2) * parseInt(epsilon, 2);
+  return matches.length === 1 ? matches.pop() : findMatch(matches, compFn, pointer + 1, path);
 }
 
-console.log(calculate(exampleInput) === 198);
+const findCO2Match = (input: string[]) =>
+  findMatch(input, (modeMap) => modeMap['1'] >= modeMap['0'] ? '0' : '1')
+
+const findOxygenMatch = (input: string[]) =>
+  findMatch(input, (modeMap) => modeMap['1'] >= modeMap['0'] ? '1' : '0')
+
+
+function calculate(input: string[]): number {
+
+  const oxygen = findOxygenMatch(input);
+  const co2 = findCO2Match(input);
+
+  console.log({ oxygen, co2 });
+
+  return parseInt(oxygen, 2) * parseInt(co2, 2);
+}
+
+console.log(calculate(exampleInput) === 230);
 console.log(calculate(exerciseInput));
