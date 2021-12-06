@@ -4,28 +4,51 @@ const loadFile = (filepath: string) => fs.readFileSync(filepath, { encoding: 'ut
   .split(',')
   .map(v => parseInt(v))
 
-const exampleInput = loadFile('./example.txt')
+function calculate(input: number[], numberOfDays = 18): any {
 
-function calculate(fishList: number[], numberOfDays = 80): number {
+  let days = 0;
+  let fishNumbersByAge: number[] = [];
 
-  let days = 1;
-  while (days <= numberOfDays) {
-    days++;
+  input.map(age => {
+    fishNumbersByAge[age] = (fishNumbersByAge[age] || 0) + 1;
+  });
 
-    fishList.map((v, idx) => {
-      let newValue = v - 1;
 
-      if (newValue < 0) {
-        newValue = 6;
-        fishList.push(8);
+  while (days < numberOfDays) {
+    const newDailyFishCount: number[] = [];
+    fishNumbersByAge.forEach((qty, age) => {
+
+      if (!qty) {
+        return;
       }
-      fishList[idx] = newValue;
-    })
-  }
 
-  return fishList.length;
+      const newAge = age - 1;
+
+      if (newAge < 0) {
+        newDailyFishCount[8] = qty;
+
+        newDailyFishCount[6] = (newDailyFishCount[newAge] || 0) + qty;
+      } else {
+        newDailyFishCount[newAge] = (newDailyFishCount[newAge] || 0) + qty;
+      }
+    });
+    fishNumbersByAge = newDailyFishCount;
+    days++;
+  }
+  return arraySum(fishNumbersByAge);
 }
 
-const result = calculate(exampleInput);
-console.log(result, result === 5934);
-console.log(calculate(loadFile('./input.txt')))
+function arraySum(arr): number {
+  if (!Array.isArray(arr)) {
+    return arr;
+  }
+
+  return arr.reduce((a, b) => {
+    return arraySum(a) + arraySum(b)
+  }, 0);
+}
+
+const result = calculate(loadFile('./example.txt'), 256);
+console.log(result, result === 26984457539)
+
+console.log(calculate(loadFile('./input.txt'), 256))
