@@ -7,15 +7,11 @@ const loadFile = (filepath: string) => fs.readFileSync(filepath, { encoding: 'ut
 function calculate(input: number[]): number {
   const crabShipsFuelSpend = [];
 
-  for (var i = Math.min(...input); i < Math.max(...input); i++ ) {
+  for (var i = Math.min(...input); i < Math.max(...input); i++) {
     let fuel = 0;
 
     input.forEach(crabShipPosition => {
-      console.log(`Difference between`, {
-        crabShipPosition,
-        fuelSpend: Math.abs(i - crabShipPosition)
-      });
-      fuel += Math.abs(i - crabShipPosition);
+      fuel += fuelBurn(Math.abs(i - crabShipPosition))
     });
 
     crabShipsFuelSpend[i] = fuel;
@@ -24,6 +20,8 @@ function calculate(input: number[]): number {
   return Math.min(...crabShipsFuelSpend);
 }
 
+const fuelBurn = (n: number) => n * (n + 1) / 2;
+
 const result = calculate(loadFile('./example.txt'));
-console.log(result, result === 37);
+console.log(result, result === 168);
 console.log(calculate(loadFile('./input.txt')));
