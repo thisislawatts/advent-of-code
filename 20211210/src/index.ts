@@ -4,7 +4,7 @@ const loadFile = (filepath: string) => fs.readFileSync(filepath, { encoding: 'ut
   .split('\n')
   .map(v => v.split(''))
 
-const SCORING = { ")": 3, "]": 57, "}": 1197, ">": 25137 };
+const SCORING = { ")": 1, "]": 2, "}": 3, ">": 4 };
 const BRACKET_PAIRS = {
   '(': ')',
   '{': '}',
@@ -13,23 +13,38 @@ const BRACKET_PAIRS = {
 };
 
 function calculate(input: any[]): number {
-  let corrupted = 0;
+  let uncorruptedlines: number[] = [];
+
+  // Retrieve valid lines
   for (const line of input) {
     let stack: any[] = [];
+    let lineIsValid = true;
     for (const char of line) {
       if (BRACKET_PAIRS.hasOwnProperty(char)) {
         stack.push(BRACKET_PAIRS[char]);
       } else {
         if (stack.pop() !== char) {
-          corrupted += SCORING[char];
+          lineIsValid = false;
           break;
         }
       }
+
+    }
+
+    if (lineIsValid) {
+      uncorruptedlines.push(
+        stack.reverse().reduce((a, b) => {
+          return (a * 5) + SCORING[b]
+        }, 0)
+      );
     }
   }
 
-  return corrupted;
+  uncorruptedlines.sort((a, b) => a - b);
+
+  return uncorruptedlines[Math.floor(uncorruptedlines.length * .5)];
 }
 
 const example = calculate(loadFile('./example.txt'))
-console.log(example, example === 26397);
+console.log(example, example === 288957);
+console.log(calculate(loadFile('./input.txt')))
