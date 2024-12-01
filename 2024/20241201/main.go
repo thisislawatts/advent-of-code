@@ -2,14 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"slices"
 	"strconv"
 	"strings"
 )
-
-var left []int
-var right []int
 
 func main() {
 
@@ -20,16 +18,27 @@ func main() {
 
 	// Split input into lines
 	lines := strings.Split(string(input), "\n")
+	var left []int
+	var right []int
 
 	for _, line := range lines {
 		// Split line into values
-		values := strings.Split(line, "   ")
+		values := strings.Fields(line)
+		if len(values) != 2 {
+			log.Fatalf("Invalid line format: %v", line)
+		}
 
 		// Convert values to ints
-		leftVal, _ := strconv.Atoi(values[0])
+		leftVal, err := strconv.Atoi(values[0])
+		if err != nil {
+			fmt.Printf("Error converting left to int: %v", err)
+		}
 		left = append(left, leftVal)
 
 		rightVal, _ := strconv.Atoi(values[1])
+		if err != nil {
+			fmt.Printf("Error converting right to int: %v", err)
+		}
 		right = append(right, rightVal)
 	}
 
@@ -54,17 +63,18 @@ func main() {
 }
 
 func similarity(a []int, b []int) int {
-	leftSum := 0
-	rightSum := 0
 
-	for i := 0; i < len(a); i++ {
-		multiplier := 0
-		for j := 0; j < len(b); j++ {
-			if a[i] == b[j] {
-				multiplier++
-			}
-		}
-		leftSum += a[i] * multiplier
+	freq := make(map[int]int)
+	for _, val := range b {
+		freq[val]++
 	}
-	return leftSum + rightSum
+
+	sum := 0
+
+	for _, val := range a {
+		if count, exists := freq[val]; exists {
+			sum += val * count
+		}
+	}
+	return sum
 }
