@@ -1,4 +1,4 @@
-module github.com/thisislawatts/advent-of-code/2024/20241201
+module github.com/thisislawatts/advent-of-code/2024/01
 
 go 1.23.2
 
