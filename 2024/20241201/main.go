@@ -47,7 +47,24 @@ func main() {
 
 	}
 
-	fmt.Printf("Total: %v\n", total)
+	fmt.Printf("Total distance: %v\n", total)
 
-	fmt.Printf("Hello %v", total)
+	// Similary score of left vs right
+	fmt.Printf("Total similarity: %v\n", similarity(left, right))
+}
+
+func similarity(a []int, b []int) int {
+	leftSum := 0
+	rightSum := 0
+
+	for i := 0; i < len(a); i++ {
+		multiplier := 0
+		for j := 0; j < len(b); j++ {
+			if a[i] == b[j] {
+				multiplier++
+			}
+		}
+		leftSum += a[i] * multiplier
+	}
+	return leftSum + rightSum
 }
