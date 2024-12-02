@@ -28,7 +28,7 @@ func fileToReports(file string) [][]int {
 	return reports
 }
 
-func isSafe(report []int) bool {
+func nestedIsSafe(report []int) bool {
 	verdict := true
 	direction := 1 // 1 = ascending, -1 = descending
 
@@ -60,6 +60,24 @@ func isSafe(report []int) bool {
 			if report[i+1]-report[i] > 3 {
 				verdict = false
 			}
+		}
+	}
+
+	return verdict
+}
+
+func isSafe(report []int) bool {
+	fmt.Printf("Checking %v\n", report)
+
+	verdict := false
+
+	for i, _ := range report {
+		s := make([]int, len(report))
+		copy(s, report)
+		s = append(s[:i], s[i+1:]...)
+		if nestedIsSafe(s) {
+			verdict = true
+			break
 		}
 	}
 
